@@ -1,0 +1,62 @@
+﻿@page "/info"
+@inject NavigationManager navManager
+@using Microsoft.AspNetCore.WebUtilities
+@using RiotSharp
+@using RiotSharp.Endpoints.SpectatorEndpoint
+@using RiotSharp.Misc
+@using RiotSharp.Caching
+@using RiotSharp.Endpoints.ChampionEndpoint
+@using RiotSharp.Http
+@using RiotSharp.Interfaces
+@using RiotSharp.Endpoints.ChampionMasteryEndpoint
+@using RiotSharp.Endpoints.Interfaces
+@using RiotSharp.Endpoints.LeagueEndpoint
+@using RiotSharp.Endpoints.MatchEndpoint
+@using RiotSharp.Endpoints.StaticDataEndpoint
+@using RiotSharp.Endpoints.SummonerEndpoint
+@using RiotSharp.Endpoints.StatusEndpoint
+@using RiotSharp.Endpoints.TeamEndpoint
+@using RiotSharp.Endpoints.ThirdPartyEndpoint
+@using RiotSharp.Endpoints.TournamentEndpoint
+@using Microsoft.AspNetCore.Mvc;
+@using System.IO;
+@using System.Threading.Tasks;
+
+
+
+<img src="@GetSummonerImmage(ProfileIconId ,puuid)" alt="Profile Image" />
+
+@puuid
+@region
+
+@code
+{
+
+    string puuid;
+    Region region;
+    public int ProfileIconId { get; set; }
+    public Requester ;
+    public int ;
+    private string ReadApiKeyFromFile()
+    {
+        string apiKeyPath = Path.Combine(Directory.GetCurrentDirectory(), "ApiKey.ini");
+        return File.ReadAllText(apiKeyPath);
+    }
+
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        QueryHelpers.ParseQuery(navManager.ToAbsoluteUri(navManager.Uri).Query).TryGetValue("puuid", out var puuidQuery);
+        QueryHelpers.ParseQuery(navManager.ToAbsoluteUri(navManager.Uri).Query).TryGetValue("reg", out var regionQuery);
+        puuid = puuidQuery;
+        Enum.TryParse<Region>(regionQuery, out region);
+
+        RiotApi Api = RiotApi.GetDevelopmentInstance(File.ReadAllText("Api/ApiKey.ini"));
+        var summonerEndpoint = new SummonerEndpoint(requester:  , Cache);
+        var summoner = await summonerEndpoint.GetSummonerByPuuidAsync(region, puuid);
+        ProfileIconId = summoner.ProfileIconId;
+
+    }
+    public string GetSummonerImmage(int ProfileIconId, string puuid) => GetSummonerImmage(ProfileIconId, puuid);
+}

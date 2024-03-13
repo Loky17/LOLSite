@@ -1,0 +1,55 @@
+﻿@page "/"
+@inject NavigationManager navManager
+@using RiotSharp
+@using RiotSharp.Misc
+
+<Alert Color="alertColor" @bind-Visible="alertVisibility">
+	<AlertMessage>@alertMessage</AlertMessage>
+	<AlertDescription>Lorem ipsum dolorem</AlertDescription>
+	<CloseButton/>
+</Alert>
+
+<Fields>
+	<Field ColumnSize="ColumnSize.Is10">
+		<Validation Validator="ValidationRule.IsNotEmpty">
+			<TextEdit @bind-Text="username" Placeholder="Username"></TextEdit>
+		</Validation>
+	</Field>
+	<Field ColumnSize="ColumnSize.Is2">
+		<Select TValue="Region" @bind-SelectedValue="region">
+			@foreach (var enumValue in Enum.GetValues<Region>())
+			{
+				<SelectItem @key="enumValue" Value="enumValue">@enumValue</SelectItem>
+			}
+		</Select>
+	</Field>
+</Fields>
+<Button Color="Color.Primary" Clicked="LogIn">Cerca</Button>
+
+@code
+{
+	bool alertVisibility = false;
+	string alertMessage = string.Empty;
+	Color alertColor;
+	string username = string.Empty;
+	Region region = new();
+
+	async Task LogIn()
+	{
+		RiotApi Api = RiotApi.GetDevelopmentInstance(File.ReadAllText("Api/ApiKey.ini"));
+		try
+		{
+			var x = await Api.Summoner.GetSummonerByNameAsync(region,username);
+			alertColor = Color.Success;
+			alertVisibility = true;
+			alertMessage = "Utente trovato";
+			navManager.NavigateTo($"/info?puuid={x.Puuid}&reg={region}");
+		}
+		catch
+		{
+			alertColor = Color.Danger;
+			alertVisibility = true;
+			alertMessage = "Utente non trovato";
+		}
+	}
+}

@@ -23,26 +23,24 @@
 @using System.Threading.Tasks;
 
 
-
-<img src="@GetSummonerImmage(ProfileIconId ,puuid)" alt="Profile Image" />
-
+<p px="10">questo è il tuo account id :</p>
 @puuid
+<br />
+<br />
+<p px="10">questo è la tua reggione :</p>
 @region
+@summoner
+
 
 @code
 {
 
     string puuid;
     Region region;
-    public int ProfileIconId { get; set; }
-    public Requester ;
-    public int ;
-    private string ReadApiKeyFromFile()
-    {
-        string apiKeyPath = Path.Combine(Directory.GetCurrentDirectory(), "ApiKey.ini");
-        return File.ReadAllText(apiKeyPath);
-    }
+    string summoner;
+    string summonerLevel;
 
+    RiotApi Api = RiotApi.GetDevelopmentInstance(File.ReadAllText("Api/ApiKey.ini"));
 
     protected async override Task OnInitializedAsync()
     {
@@ -50,13 +48,9 @@
         QueryHelpers.ParseQuery(navManager.ToAbsoluteUri(navManager.Uri).Query).TryGetValue("puuid", out var puuidQuery);
         QueryHelpers.ParseQuery(navManager.ToAbsoluteUri(navManager.Uri).Query).TryGetValue("reg", out var regionQuery);
         puuid = puuidQuery;
+        var summoner = Api.Summoner.GetSummonerByPuuidAsync(region, "puuid");
         Enum.TryParse<Region>(regionQuery, out region);
-
-        RiotApi Api = RiotApi.GetDevelopmentInstance(File.ReadAllText("Api/ApiKey.ini"));
-        var summonerEndpoint = new SummonerEndpoint(requester:  , Cache);
-        var summoner = await summonerEndpoint.GetSummonerByPuuidAsync(region, puuid);
-        ProfileIconId = summoner.ProfileIconId;
-
+        
     }
-    public string GetSummonerImmage(int ProfileIconId, string puuid) => GetSummonerImmage(ProfileIconId, puuid);
+
 }

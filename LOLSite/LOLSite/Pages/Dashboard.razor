@@ -39,11 +39,12 @@
 		RiotApi Api = RiotApi.GetDevelopmentInstance(File.ReadAllText("Api/ApiKey.ini"));
 		try
 		{
-			var x = await Api.Summoner.GetSummonerByNameAsync(region,username);
+			var summoner = await Api.Summoner.GetSummonerByNameAsync(region,username);
 			alertColor = Color.Success;
 			alertVisibility = true;
 			alertMessage = "Utente trovato";
-			navManager.NavigateTo($"/info?puuid={x.Puuid}&reg={region}");
+			navManager.NavigateTo($"/info?puuid={summoner.Puuid}&reg={region}");
+			
 		}
 		catch
 		{
